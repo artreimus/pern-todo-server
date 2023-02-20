@@ -11,7 +11,7 @@ const getAllTodos = asyncHandler(async (req, res) => {
 });
 
 // @desc GET a to do
-// @route /api/v1/todo/:id
+// @route /api/v1/todos/:id
 // @access public
 const getTodo = asyncHandler(async (req, res) => {
   const { id } = req.params;
@@ -20,7 +20,7 @@ const getTodo = asyncHandler(async (req, res) => {
 });
 
 // @desc POST a to do
-// @route /api/v1/todo
+// @route /api/v1/todos
 // @access public
 const createTodo = asyncHandler(async (req, res) => {
   const { description } = req.body;
@@ -32,7 +32,7 @@ const createTodo = asyncHandler(async (req, res) => {
 });
 
 // @access PATCH a to do
-// @route /api/v1/todo/:id
+// @route /api/v1/todos/:id
 // @access public
 const updateTodo = asyncHandler(async (req, res) => {
   const { id } = req.params;
@@ -45,7 +45,7 @@ const updateTodo = asyncHandler(async (req, res) => {
 });
 
 // @access DELETE a to do
-// @route /api/v1/todo/:id
+// @route /api/v1/todos/:id
 // @access public
 const deleteTodo = asyncHandler(async (req, res) => {
   const { id } = req.params;
