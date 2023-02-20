@@ -1,12 +1,12 @@
 import asyncHandler from 'express-async-handler';
 import pool from '../db/index.js';
+import { NotFoundError } from '../error/index.js';
 
 // @desc GET all to dos
 // @route /api/v1/todos
 // @access public
 const getAllTodos = asyncHandler(async (req, res) => {
   const allTodos = await pool.query('SELECT * FROM todo');
-
   res.status(200).json({ data: allTodos.rows });
 });
 
@@ -16,6 +16,10 @@ const getAllTodos = asyncHandler(async (req, res) => {
 const getTodo = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const todo = await pool.query('SELECT * FROM todo WHERE todo_id = $1', [id]);
+
+  if (!todo.rows.length) {
+    throw new NotFoundError(`Todo with id ${id} was not found`);
+  }
   res.status(200).json({ data: todo.rows });
 });
 
