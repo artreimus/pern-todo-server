@@ -5,7 +5,7 @@ import UnauthorizedError from './unauthorized.js';
 import UnauthenticatedError from './unauthenticated.js';
 import CustomAPIError from './custom-api.js';
 
-export {
+export default {
   CustomAPIError,
   UnauthenticatedError,
   NotFoundError,
