@@ -23,7 +23,7 @@ const getList = asyncHandler(async (req, res) => {
 });
 
 // @desc GET user list
-// @route /api/v1/lists/user/:id
+// @route /api/v1/lists/user
 // @access private
 const getUserList = asyncHandler(async (req, res) => {
   const { user_id } = req;
@@ -32,7 +32,7 @@ const getUserList = asyncHandler(async (req, res) => {
   ]);
 
   if (!list.rows.length) {
-    throw new CustomError.NotFoundError(`User with id ${id} has no list`);
+    throw new CustomError.NotFoundError(`User with id ${user_id} has no list`);
   }
 
   res.status(200).json({ data: list.rows });
@@ -40,7 +40,7 @@ const getUserList = asyncHandler(async (req, res) => {
 
 // @desc POST a list
 // @route /api/v1/lists
-// @access pruvate
+// @access private
 const createList = asyncHandler(async (req, res) => {
   const { title } = req.body;
   const { user_id } = req;

@@ -43,7 +43,7 @@ const register = asyncHandler(async (req, res) => {
     [email, password]
   );
 
-  const user = createTokenUser(newUser);
+  const user = createTokenUser(newUser.rows[0]);
 
   const accessToken = createJWT(
     { user },
@@ -53,7 +53,18 @@ const register = asyncHandler(async (req, res) => {
 
   attachCookieToResponse({ res, user });
 
-  res.status(200).json({ message: 'Registration successful', accessToken });
+  // Create list
+  const title = `Default list ${user.user_id}`;
+  const newList = await pool.query(
+    'INSERT INTO list (title, user_id, default_user_list) VALUES($1, $2, $3) RETURNING *',
+    [title, user.user_id, true]
+  );
+
+  res.status(200).json({
+    message: 'Registration successful',
+    accessToken,
+    defaultList: newList.rows[0],
+  });
 });
 
 // @desc Login
@@ -105,7 +116,6 @@ const login = asyncHandler(async (req, res) => {
 // @access Public - because token has expired
 const refresh = asyncHandler(async (req, res) => {
   const cookies = checkCookies(req);
-
   const refreshToken = cookies.refreshToken;
 
   jwt.verify(
@@ -123,9 +133,7 @@ const refresh = asyncHandler(async (req, res) => {
       );
 
       if (!foundUser.rows.length) {
-        return res
-          .status(StatusCodes.UNAUTHORIZED)
-          .json({ message: 'Invalid token. Please login' });
+        throw new CustomError.UnauthorizedError('Invalid token. Please login');
       }
 
       const user = createTokenUser(foundUser.rows[0]);
@@ -143,7 +151,7 @@ const refresh = asyncHandler(async (req, res) => {
 });
 
 // @desc Logout
-// @route {POST} /auth/logout
+// @route GET /auth/logout
 // @access Public - just to clearn cookie if exists
 const logout = asyncHandler(async (req, res) => {
   checkCookies(req);
@@ -153,7 +161,7 @@ const logout = asyncHandler(async (req, res) => {
     sameSite: 'None',
     secure: true,
   });
-  res.status(StatusCodes.OK).json({ message: 'Cookie successfully cleared' });
+  res.status(200).json({ message: 'Cookie successfully cleared' });
 });
 
 // @desc Forgot Password

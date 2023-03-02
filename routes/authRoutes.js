@@ -11,7 +11,7 @@ const router = express.Router();
 
 router.post('/register', register);
 router.post('/login', loginLimiterMiddleware, login);
-router.post('/logout', logout);
+router.get('/logout', logout);
 router.get('/refresh', refresh);
 
 // router.get('/refresh', refresh);
