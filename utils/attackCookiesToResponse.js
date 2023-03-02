@@ -19,8 +19,6 @@ const attachCookieToResponse = ({ res, user }) => {
     sameSite: 'None', // cross-site cookie
     signed: true,
   });
-
-  console.log('success?');
 };
 
 export default attachCookieToResponse;
