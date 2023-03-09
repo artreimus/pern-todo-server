@@ -12,10 +12,16 @@ const getAllLists = asyncHandler(async (req, res) => {
 
 // @desc GET a list
 // @route /api/v1/lists/:id
-// @access pruvate
+// @access private
 const getList = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const list = await pool.query('SELECT * FROM list WHERE list_id = $1', [id]);
+  const { user_id } = req;
+
+  const list = await pool.query(
+    'SELECT * FROM list WHERE list_id = $1 AND user_id = $2',
+    [id, user_id]
+  );
+
   if (!list.rows.length) {
     throw new CustomError.NotFoundError(`List with id ${id} was not found`);
   }
@@ -25,17 +31,13 @@ const getList = asyncHandler(async (req, res) => {
 // @desc GET user list
 // @route /api/v1/lists/user
 // @access private
-const getUserList = asyncHandler(async (req, res) => {
+const getUserLists = asyncHandler(async (req, res) => {
   const { user_id } = req;
-  const list = await pool.query('SELECT * FROM list WHERE user_id = $1', [
+  const lists = await pool.query('SELECT * FROM list WHERE user_id = $1', [
     user_id,
   ]);
 
-  if (!list.rows.length) {
-    throw new CustomError.NotFoundError(`User with id ${user_id} has no list`);
-  }
-
-  res.status(200).json({ data: list.rows });
+  res.status(200).json({ data: lists.rows });
 });
 
 // @desc POST a list
@@ -44,6 +46,7 @@ const getUserList = asyncHandler(async (req, res) => {
 const createList = asyncHandler(async (req, res) => {
   const { title } = req.body;
   const { user_id } = req;
+
   const newList = await pool.query(
     'INSERT INTO list (title, user_id) VALUES($1, $2) RETURNING *',
     [title, user_id]
@@ -57,9 +60,11 @@ const createList = asyncHandler(async (req, res) => {
 const updateList = asyncHandler(async (req, res) => {
   const { id } = req.params;
   const { title } = req.body;
+  const { user_id } = req;
+
   const updatedList = await pool.query(
-    'UPDATE list SET title = $1 WHERE list_id = $2 RETURNING *',
-    [title, id]
+    'UPDATE list SET title = $1 WHERE list_id = $2 AND user_id = $3 RETURNING *',
+    [title, id, user_id]
   );
   res.status(200).json({ success: true, data: updatedList.rows });
 });
@@ -69,9 +74,11 @@ const updateList = asyncHandler(async (req, res) => {
 // @access public
 const deleteList = asyncHandler(async (req, res) => {
   const { id } = req.params;
+  const { user_id } = req;
+
   const deletedList = await pool.query(
-    'DELETE FROM list WHERE list_id = $1  RETURNING *',
-    [id]
+    'DELETE FROM list WHERE list_id = $1 AND user_id = $2 RETURNING *',
+    [id, user_id]
   );
   res.status(200).json({ success: true, data: deletedList.rows });
 });
@@ -79,7 +86,7 @@ const deleteList = asyncHandler(async (req, res) => {
 export {
   createList,
   getAllLists,
-  getUserList,
+  getUserLists as getUserList,
   getList,
   updateList,
   deleteList,
