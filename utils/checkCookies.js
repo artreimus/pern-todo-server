@@ -4,7 +4,7 @@ const checkCookies = (req) => {
   const cookies = req.signedCookies;
 
   if (!cookies?.refreshToken) {
-    throw new CustomError.BadRequestError('Invalid cookies');
+    throw new CustomError.BadRequestError('Invalid authentication');
   }
 
   return cookies;
