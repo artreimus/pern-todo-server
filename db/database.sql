@@ -12,7 +12,7 @@ CREATE TABLE list(
     list_id SERIAL PRIMARY KEY,
     user_id INT,
     title VARCHAR(20) NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES user_app(user_id)
+    FOREIGN KEY (user_id) REFERENCES user_app(user_id) ON DELETE CASCADE
 );
 
 CREATE TABLE user_app(
@@ -22,11 +22,11 @@ CREATE TABLE user_app(
 );
 
 CREATE TABLE todo(
+    todo_id SERIAL PRIMARY KEY,
     list_id INT,
     description VARCHAR(255),
-    completed BOOLEAN,
+    completed BOOLEAN DEFAULT false,
     due_date DATE,
-    PRIMARY KEY (list_id),
     FOREIGN KEY(list_id) REFERENCES list(list_id) ON DELETE CASCADE
 );
 
@@ -36,3 +36,4 @@ ALTER TABLE todo ADD user_id INT;
 ALTER TABLE todo ADD completed BOOLEAN DEFAULT false;
 ALTER TABLE todo ADD due_date DATE;
 ALTER TABLE todo DROP COLUMN completed;
+ALTER TABLE list ADD default_user_list BOOLEAN DEFAULT false;
